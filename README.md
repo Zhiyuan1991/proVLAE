@@ -2,7 +2,7 @@
 
 code for paper
 
-enviroment:
+##enviroment:
 python 3.5
 tensorflow 1.13.1
 pytorch 0.4.1
