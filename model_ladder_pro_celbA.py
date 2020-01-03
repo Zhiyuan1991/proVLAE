@@ -3,10 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-import math
 import tensorflow as tf
-from numbers import Number
-import matplotlib.pyplot as plt
 
 import lib.dist as dist
 import torch

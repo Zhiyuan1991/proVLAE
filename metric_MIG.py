@@ -1,12 +1,8 @@
 #Adapt code from: https://github.com/rtqichen/beta-tcvae
 #Made modification for computing MIG-sup and for 3dshapes
 import math
-import os
 import torch
-from tqdm import tqdm
-from torch.utils.data import DataLoader
 from torch.autograd import Variable
-import numpy as np
 import lib.utils as utils
 
 metric_name = 'MIG'
