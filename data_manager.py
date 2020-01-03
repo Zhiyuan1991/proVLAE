@@ -11,7 +11,7 @@ from PIL import Image
 class DataManager(object):
   def load(self):
     # Load dataset
-    dataset_zip = np.load('/home/zl7904/Documents/projects/hierarchical/disentangled_vae-master/data/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz',
+    dataset_zip = np.load('data/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz', #"path/to/dsprite"
                           encoding='latin1')
 
     self.imgs = dataset_zip['imgs']
@@ -68,7 +68,7 @@ class DataManager(object):
 
 class DataManager_Celeb64(object):
   def load(self):
-    self.img_folder = "/home/zl7904/Documents/Data/celebA" #"path/to/celebA"
+    self.img_folder = "data/celebA" #"path/to/celebA"
     self.all_path_list = glob.glob(os.path.join(self.img_folder,"*.png"))
     self.imgs = None
     self.n_samples = len(self.all_path_list)
@@ -97,7 +97,7 @@ class DataManager_3dshapes(object):
   #3dshapes dataset: https://github.com/deepmind/3d-shapes
   def load(self):
     import h5py
-    dataset = h5py.File('/home/zl7904/Documents/Data/3dshapes/3dshapes.h5', 'r')
+    dataset = h5py.File('data/3dshapes.h5', 'r') #"path/to/3Dshapes"
     images = dataset['images']
     self.imgs=np.array(images)
     self.n_samples = self.imgs.shape[0]
