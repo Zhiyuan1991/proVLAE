@@ -25,8 +25,8 @@ tf.app.flags.DEFINE_string("log_file", "./log", "log file directory")
 tf.app.flags.DEFINE_integer("train_seq",3,"training sequence number")
 tf.app.flags.DEFINE_boolean("KL", False, "pre-trained KL loss or not")
 tf.app.flags.DEFINE_boolean("fadein", False, "fadein new blocks or not")
-tf.app.flags.DEFINE_float("coff", 1., "coff for pre-trained KL loss")
-tf.app.flags.DEFINE_float("gpu_usage", 1., "reduce TF usage to save space for pytorch or set allow_growth=True")
+tf.app.flags.DEFINE_float("coff", .5, "coff for pre-trained KL loss")
+tf.app.flags.DEFINE_float("gpu_usage", 1., "TF GPU usage fraction")
 tf.app.flags.DEFINE_integer("z_dim", 3, "dimensions for each latent variable")
 tf.app.flags.DEFINE_integer("mode", 1, "mode. 1: training one step; 2: display results; 3: compute metrics")
 flags = tf.app.flags.FLAGS
@@ -272,7 +272,10 @@ def main(argv):
     print('set to default dataset: dsprite')
     manager = DataManager()
 
-  gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=flags.gpu_usage)
+  if flags.mode==3:
+    gpu_options = tf.GPUOptions(allow_growth=True)
+  else:
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=flags.gpu_usage)
   sess = tf.Session(config=tf.ConfigProto(log_device_placement=False,gpu_options=gpu_options))
   model = VAE_ladder(z_dim=z_dim,beta=flags.beta,
               learning_rate=flags.learning_rate,flags=flags,chn_num=chn_num,train_seq=flags.train_seq,)
