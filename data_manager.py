@@ -15,20 +15,8 @@ class DataManager(object):
                           encoding='latin1')
 
     self.imgs = dataset_zip['imgs']
-    self.latents_values = dataset_zip['latents_values']
-    latents_classes = dataset_zip['latents_classes']
-    metadata = dataset_zip['metadata'][()]
 
-    latents_sizes = metadata['latents_sizes']
-    self.n_samples = latents_sizes[::-1].cumprod()[-1]
-
-    self.latents_bases = np.concatenate((latents_sizes[::-1].cumprod()[::-1][1:],
-                                         np.array([1, ])))
-
-    for j in range(1,self.latents_values.shape[1]):
-      v=self.latents_values[:,j]
-      self.latents_values[:, j] = ((v - v.min()) / (v.max() - v.min())-0.5)*6.
-    self.latents_values=self.latents_values[:,1:]
+    self.n_samples = len(self.imgs)
 
   @property
   def sample_size(self):
@@ -46,17 +34,6 @@ class DataManager(object):
       img = img.reshape(64,64,1)
       images.append(img)
     return images
-
-  def get_images_with_label(self, indices):
-    images = []
-    labels = []
-    for index in indices:
-      img = self.imgs[index]
-      label = self.latents_values[index]
-      img = img.reshape(64,64,1)
-      images.append(img)
-      labels.append(label)
-    return images,labels
 
   def get_random_images(self, size,with_label=False):
     indices = [np.random.randint(self.n_samples) for i in range(size)]
