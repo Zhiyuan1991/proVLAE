@@ -13,9 +13,7 @@ class DataManager(object):
     # Load dataset
     dataset_zip = np.load('data/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz', #"path/to/dsprite"
                           encoding='latin1')
-
     self.imgs = dataset_zip['imgs']
-
     self.n_samples = len(self.imgs)
 
   @property
@@ -35,12 +33,9 @@ class DataManager(object):
       images.append(img)
     return images
 
-  def get_random_images(self, size,with_label=False):
+  def get_random_images(self, size):
     indices = [np.random.randint(self.n_samples) for i in range(size)]
-    if not with_label:
-      return self.get_images(indices)
-    else:
-      return self.get_images_with_label(indices)
+    return self.get_images(indices)
 
 
 class DataManager_Celeb64(object):
@@ -71,7 +66,6 @@ class DataManager_Celeb64(object):
     return self.get_images(indices)
 
 class DataManager_3dshapes(object):
-  #3dshapes dataset: https://github.com/deepmind/3d-shapes
   def load(self):
     import h5py
     dataset = h5py.File('data/3dshapes.h5', 'r') #"path/to/3Dshapes"
