@@ -180,7 +180,7 @@ def mutual_info_metric_shapes(sess, vae, manager):
         cond_entropies[3] += cond_entropies_i.cpu() / 32
 
     metric = compute_metric_shapes(marginal_entropies, cond_entropies,active_units)
-    print("metric:",metric,marginal_entropies,cond_entropies)
+    print("metric:",metric)
     return metric, marginal_entropies, cond_entropies
 
 def mutual_info_metric_3dshapes(sess, vae, manager, zlayer=0):

@@ -20,11 +20,6 @@ class DataManager(object):
   def sample_size(self):
     return self.n_samples
 
-  def get_image(self, shape=0, scale=0, orientation=0, x=0, y=0):
-    latents = [0, shape, scale, orientation, x, y]
-    index = np.dot(latents, self.latents_bases).astype(int)
-    return self.get_images([index])[0]
-
   def get_images(self, indices):
     images = []
     for index in indices:
