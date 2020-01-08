@@ -3,7 +3,6 @@
 Code for paper [PROGRESSIVE LEARNING AND DISENTANGLEMENT OF HIERARCHICAL REPRESENTATIONS](https://openreview.net/forum?id=SJxpsxrYPS).
 
 ## Requirements:
-CUDA 10.0.130
 python 3.5 \
 tensorflow 1.13.1 (also tested on 1.8.0, should be flexible)\
 pytorch 0.4.1 (for computing metrics only)\
