@@ -15,9 +15,9 @@ moviepy (for generating .gif images)
 dSprite https://github.com/deepmind/dsprites-dataset \
 3DShapes https://github.com/deepmind/3d-shapes \
 celebA http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html (Align&Cropped Images) \
-please downloaded those datasets and change those paths in "data_manager.py"
+please download those datasets and change the paths in "data_manager.py"
 
 ## Scripts
 train model: train_pro-VLAE.sh \
 view results: visualization.sh \
-compute metrics: compute_metric.sh \
+compute metrics: compute_metric.sh
