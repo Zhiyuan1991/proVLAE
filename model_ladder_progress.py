@@ -156,8 +156,8 @@ class VAE_ladder(object):
             return deconv5
 
     def _create_network(self):
-        self.x = tf.placeholder(tf.float32, shape=[None, self.image_size,self.image_size,self.chn_num])
-        self.fade_in = tf.placeholder(tf.float32,shape=[])
+        self.x = tf.placeholder(tf.float32, shape=[None, self.image_size,self.image_size,self.chn_num]) #input image
+        self.fade_in = tf.placeholder(tf.float32,shape=[]) #fade-in coefficient
         with tf.variable_scope("vae_ladder"):
             #inference
             self.h1 = self.inference_h1(self.x)

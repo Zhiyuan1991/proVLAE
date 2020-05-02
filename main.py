@@ -22,16 +22,16 @@ tf.app.flags.DEFINE_float("beta", 1.0, "beta for the KL loss")
 tf.app.flags.DEFINE_float("learning_rate", 5e-4, "learning rate")
 tf.app.flags.DEFINE_string("checkpoint_dir", "checkpoints/3dshapes_progress_z3_b8", "checkpoint directory")
 tf.app.flags.DEFINE_string("log_file", "./log", "log file directory")
-tf.app.flags.DEFINE_integer("train_seq",3,"training sequence number")
-tf.app.flags.DEFINE_boolean("KL", False, "pre-trained KL loss or not")
-tf.app.flags.DEFINE_boolean("fadein", False, "fadein new blocks or not")
+tf.app.flags.DEFINE_integer("train_seq",1,"progressive training sequence number")
+tf.app.flags.DEFINE_boolean("KL", False, "apply pre-trained KL loss or not")
+tf.app.flags.DEFINE_boolean("fadein", False, "apply fadein for new layers or not")
 tf.app.flags.DEFINE_float("coff", .5, "coff for pre-trained KL loss")
 tf.app.flags.DEFINE_float("gpu_usage", 1., "TF GPU usage fraction")
-tf.app.flags.DEFINE_integer("z_dim", 3, "dimensions for each latent variable")
+tf.app.flags.DEFINE_integer("z_dim", 3, "dimension number for each latent variable")
 tf.app.flags.DEFINE_integer("mode", 1, "mode. 1: training one step; 2: display results; 3: compute metrics")
 flags = tf.app.flags.FLAGS
 
-test_img_ind=0 #image indice for visualization
+test_img_ind=0 #image index for visualization
 
 #settings
 z_dim = flags.z_dim
@@ -117,6 +117,7 @@ def reconstruct_check(sess, model, images):
     imsave("reconstr_img/check_r{0}.png".format(i), imgs_comb)
 
 def compute_mean_loss(sess,model,manager):
+  #for a given dataset, compute average reconstrcution loss and KL divergence
   n_samples = manager.sample_size
   indices = list(range(n_samples))
 
@@ -135,7 +136,16 @@ def compute_mean_loss(sess,model,manager):
   latent_total=np.array(latent_total)
   print("recon:",recon_total/float(n_samples),"latent:",latent_total/float(n_samples))
 
-def disentangle_check_image_row(sess, model, manager, save_original=False, plot_flag=True, step=0,):
+def disentangle_check_image_row(sess, model, manager, test_img_ind, save_original=False, step=0,):
+  '''
+    input:
+      test_img_ind: index for one image
+      manager: manager for a given dataset
+    output:
+      traverse images in folder ./disentangle_img_row
+      traverse gif in folder ./disentangle_img
+      combined traverse gif in folder ./disentangle_img and the checkpoint folder
+  '''
   if not os.path.exists("disentangle_img_row"):
     os.mkdir("disentangle_img_row")
   if not os.path.exists("disentangle_img"):
@@ -170,41 +180,46 @@ def disentangle_check_image_row(sess, model, manager, save_original=False, plot_
       if z_sigma_sq[ind] < 0.2:
         select_dim.append(key+"_"+str(ind))
 
-    if plot_flag:
-      n_z = z_mean.shape[0]
-      for target_z_index in range(n_z):
-        samples = []
-        for ri in range(gif_nums + 1):
-          maxi = 2.5
-          value = -maxi + 2 * maxi / gif_nums * ri
-          code2 = copy.deepcopy(code)
-          for i in range(n_z):
-            if i == target_z_index:
-              code2[key][0][i] = value
-            else:
-              code2[key][0][i] = code[key][0][i]
-          reconstr_img = model.generate(sess,code2)
-          rimg = reconstr_img[0].reshape(image_shape)
-          samples.append(rimg * 255)
-        samples_allz.append(samples)
-        imgs_comb = np.hstack((img for img in samples))
-        imsave("disentangle_img_row/check_" + key + "_z{0}.png".format(target_z_index), imgs_comb)
-        make_gif(samples, "disentangle_img/"+key+"_z_%s.gif" % (target_z_index), true_image=True)
-  if plot_flag:
-    final_gif = []
-    for i in range(gif_nums):
-      gif_samples = []
-      for j in range(z_dim*len(qz.keys())):
-        gif_samples.append(samples_allz[j][i])
-      gif_samples.reverse() #now the order from left to right is high layer to low layer
-      imgs_comb = np.hstack((img for img in gif_samples))
-      final_gif.append(imgs_comb)
-    make_gif(final_gif, "disentangle_img/all_z_step{0}.gif".format(step), true_image=True)
-    make_gif(final_gif, flags.checkpoint_dir+"/all_z_step{0}.gif".format(step), true_image=True)
-
+    n_z = z_mean.shape[0]
+    for target_z_index in range(n_z):
+      samples = []
+      for ri in range(gif_nums + 1):
+        maxi = 2.5
+        value = -maxi + 2 * maxi / gif_nums * ri
+        code2 = copy.deepcopy(code)
+        for i in range(n_z):
+          if i == target_z_index:
+            code2[key][0][i] = value
+          else:
+            code2[key][0][i] = code[key][0][i]
+        reconstr_img = model.generate(sess,code2)
+        rimg = reconstr_img[0].reshape(image_shape)
+        samples.append(rimg * 255)
+      samples_allz.append(samples)
+      imgs_comb = np.hstack((img for img in samples))
+      imsave("disentangle_img_row/check_" + key + "_z{0}.png".format(target_z_index), imgs_comb)
+      make_gif(samples, "disentangle_img/"+key+"_z_%s.gif" % (target_z_index), true_image=True)
+  final_gif = []
+  for i in range(gif_nums):
+    gif_samples = []
+    for j in range(z_dim*len(qz.keys())):
+      gif_samples.append(samples_allz[j][i])
+    gif_samples.reverse() #now the order from left to right is high layer to low layer
+    imgs_comb = np.hstack((img for img in gif_samples))
+    final_gif.append(imgs_comb)
+  make_gif(final_gif, "disentangle_img/all_z_step{0}.gif".format(step), true_image=True)
+  make_gif(final_gif, flags.checkpoint_dir+"/all_z_step{0}.gif".format(step), true_image=True)
   return select_dim
 
 def disentangle_layer_sample(sess, model, manager, save_original=True, step=1):
+  '''
+    input:
+      manager: manager for a given dataset
+      step: progressive training step
+    output:
+      images generated by randomly sample latent variables from layer step,
+      while fixing latent variables from other layers.
+  '''
   if not os.path.exists("disentangle_img_row"):
     os.mkdir("disentangle_img_row")
   if not os.path.exists("disentangle_img"):
@@ -289,13 +304,13 @@ def main(argv):
     print("training data size:",manager.n_samples)
     train(sess, model, manager, saver)
     disentangle_layer_sample(sess, model, manager, step=flags.train_seq)
-  elif flags.mode==2: #visulazation
+  elif flags.mode==2: #visualization
     manager.load()
     print("training data size:", manager.n_samples)
     reconstruct_check_images = manager.get_random_images(10)
     reconstruct_check(sess, model, reconstruct_check_images)
     disentangle_layer_sample(sess, model, manager, step=flags.train_seq)
-    disentangle_check_image_row(sess,model,manager)
+    disentangle_check_image_row(sess,model,manager,test_img_ind)
     compute_mean_loss(sess, model, manager)
   elif flags.mode==3: #compute MIG and MIG-sup
     manager.load()

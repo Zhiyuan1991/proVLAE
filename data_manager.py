@@ -5,7 +5,6 @@ from __future__ import print_function
 import numpy as np
 import glob
 import os
-
 from PIL import Image
 
 class DataManager(object):
@@ -63,7 +62,8 @@ class DataManager_Celeb64(object):
 class DataManager_3dshapes(object):
   def load(self):
     import h5py
-    dataset = h5py.File('data/3dshapes.h5', 'r') #"path/to/3Dshapes"
+    #dataset = h5py.File('data/3dshapes.h5', 'r') #"path/to/3Dshapes"
+    dataset = h5py.File('/home/zl7904/Documents/Data/3dshapes/3dshapes.h5', 'r')
     images = dataset['images']
     self.imgs=np.array(images)
     self.n_samples = self.imgs.shape[0]
