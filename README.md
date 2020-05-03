@@ -1,17 +1,22 @@
 # proVLAE
 
-code for paper
+Code for paper [PROGRESSIVE LEARNING AND DISENTANGLEMENT OF HIERARCHICAL REPRESENTATIONS](https://openreview.net/forum?id=SJxpsxrYPS).
 
-## enviroment:
-CUDA 10.0.130
+## Requirements:
 python 3.5 \
-tensorflow 1.13.1 \
-pytorch 0.4.1 \
+tensorflow 1.13.1 (also tested on 1.8.0, should be flexible)\
+pytorch 0.4.1 (for computing metrics only)\
 numpy \
-scipy 1.1.0 (You might encounter error of "imsave" because "imsave is deprecated in SciPy 1.0.0, and will be removed in 1.2.")
+scipy 1.1.0 (You might encounter errors of "imsave" because "imsave is deprecated in SciPy 1.0.0, and will be removed in 1.2.") \
+moviepy (for generating .gif images)
 
-## dataset
+## Dataset
 dSprite https://github.com/deepmind/dsprites-dataset \
 3DShapes https://github.com/deepmind/3d-shapes \
 celebA http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html (Align&Cropped Images) \
-please downloaded those datasets and change the path in "data_manager.py"
+please download those datasets and change the paths in "data_manager.py"
+
+## Scripts
+train model: train_pro-VLAE.sh \
+view results: visualization.sh \
+compute metrics: compute_metric.sh
